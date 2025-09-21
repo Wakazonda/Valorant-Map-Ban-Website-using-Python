@@ -1,17 +1,13 @@
 import streamlit as st
 import random
 
-# All 12 standard Valorant maps
 ALL_MAPS = [
     "Ascent", "Bind", "Breeze", "Fracture", "Haven", "Icebox", "Lotus",
     "Pearl", "Split", "Sunset", "Abyss", "Corrode"
 ]
 
 
-# --- Function to set background image ---
 def set_background_image():
-    """Sets a Valorant-themed background image using a URL and custom CSS."""
-    # Using a Valorant-themed wallpaper from a public source.
     background_image_url = "https://images.alphacoders.com/131/1319702.jpeg"
 
     st.markdown(
@@ -52,7 +48,6 @@ def set_background_image():
     )
 
 
-# --- Session State Initialization ---
 def initialize_session_state():
     if 'available_maps' not in st.session_state:
         st.session_state.available_maps = list(ALL_MAPS)
@@ -67,7 +62,6 @@ def initialize_session_state():
 
 
 def ban_map(map_name):
-    """Move a map from available to banned list."""
     if map_name in st.session_state.available_maps:
         st.session_state.available_maps.remove(map_name)
         st.session_state.banned_maps.append(map_name)
@@ -76,7 +70,6 @@ def ban_map(map_name):
 
 
 def pick_map(map_name):
-    """Move a map from available to picked list."""
     if map_name in st.session_state.available_maps:
         st.session_state.available_maps.remove(map_name)
         st.session_state.picked_maps.append(map_name)
@@ -85,7 +78,6 @@ def pick_map(map_name):
 
 
 def reset_state():
-    """Reset the app to its initial state."""
     st.session_state.available_maps = list(ALL_MAPS)
     st.session_state.banned_maps = []
     st.session_state.picked_maps = []
@@ -93,14 +85,12 @@ def reset_state():
     st.rerun()
 
 
-# --- Main app logic ---
 def main():
     set_background_image()
     initialize_session_state()
 
     st.title("Valorant Map Veto Tool")
 
-    # Team Name Inputs
     st.header("Enter Team Names")
     col1, col2 = st.columns(2)
     with col1:
@@ -108,7 +98,6 @@ def main():
     with col2:
         st.session_state.teams['Team B'] = st.text_input("Team B Name", value=st.session_state.teams['Team B'])
 
-    # Display Attack/Defense Sides
     if st.session_state.teams['Team A'] and st.session_state.teams['Team B']:
         st.subheader("Match Sides")
         st.markdown(f"**First Half:**")
@@ -118,7 +107,6 @@ def main():
         st.markdown(f"**Attacking:** {st.session_state.teams['Team B']}")
         st.markdown(f"**Defending:** {st.session_state.teams['Team A']}")
 
-    # Map Selection Options
     st.header("Map Veto & Selection")
     maps_to_keep = st.selectbox(
         "How many maps should remain?",
