@@ -1,4 +1,5 @@
 import streamlit as st
+import base64
 
 # --- Safe rerun for compatibility ---
 def safe_rerun():
@@ -15,16 +16,23 @@ ALL_MAPS = [
 ]
 
 
-# --- Background CSS ---
+# --- Background CSS using local image ---
 def set_background_image():
-    background_image_url = "https://images.alphacoders.com/131/1319702.jpeg"
+    image_path = "images.jpeg"  # Image file in your repo
+
+    # Encode image as base64
+    with open(image_path, "rb") as img_file:
+        encoded = base64.b64encode(img_file.read()).decode()
 
     st.markdown(
         f"""
         <style>
         .stApp {{
-            background: url("{background_image_url}") no-repeat center center fixed !important;
+            background-image: url("data:image/jpg;base64,{encoded}");
             background-size: cover !important;
+            background-position: center !important;
+            background-repeat: no-repeat !important;
+            background-attachment: fixed !important;
         }}
         .block-container {{
             background-color: rgba(0, 0, 0, 0.55) !important;
@@ -118,10 +126,35 @@ def main():
         team_b = st.text_input("Team B Name", value=st.session_state.get("team_b", ""))
         st.session_state["team_b"] = team_b
 
+    # Match Sides Display
     if team_a and team_b:
-        st.subheader("Match Sides")
-        st.markdown(f"**First Half:** Attacking → {team_a} | Defending → {team_b}")
-        st.markdown(f"**Second Half:** Attacking → {team_b} | Defending → {team_a}")
+        st.subheader("Match Sides ⚔️")
+
+        st.markdown("**First Half:**")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown(
+                f"<div style='background-color:#FD4556; color:white; padding:10px; border-radius:8px; text-align:center;'>⚔️ Attacking<br>{team_a}</div>",
+                unsafe_allow_html=True
+            )
+        with col2:
+            st.markdown(
+                f"<div style='background-color:#3355C3; color:white; padding:10px; border-radius:8px; text-align:center;'>🛡️ Defending<br>{team_b}</div>",
+                unsafe_allow_html=True
+            )
+
+        st.markdown("**Second Half:**")
+        col3, col4 = st.columns(2)
+        with col3:
+            st.markdown(
+                f"<div style='background-color:#FD4556; color:white; padding:10px; border-radius:8px; text-align:center;'>⚔️ Attacking<br>{team_b}</div>",
+                unsafe_allow_html=True
+            )
+        with col4:
+            st.markdown(
+                f"<div style='background-color:#3355C3; color:white; padding:10px; border-radius:8px; text-align:center;'>🛡️ Defending<br>{team_a}</div>",
+                unsafe_allow_html=True
+            )
 
     # Map veto setup
     st.header("🗺️ Map Veto & Selection")
@@ -135,10 +168,9 @@ def main():
             st.session_state.final_map_count = maps_to_keep
             safe_rerun()
     else:
-        # If still more bans allowed
         bans_needed = len(ALL_MAPS) - st.session_state.final_map_count
         if len(st.session_state.banned_maps) < bans_needed:
-            st.subheader("Available Maps (Ban Phase):")
+            st.subheader(f"Available Maps (Ban Phase) - {len(st.session_state.available_maps)} left")
             cols = st.columns(3)
             for i, map_name in enumerate(st.session_state.available_maps):
                 with cols[i % 3]:
